@@ -1,10 +1,5 @@
-/*
-   Mathieu Stefani, 13 février 2016
-   Example of an hello world server
-*/
-
-
 #include "pistache/endpoint.h"
+#include <stdlib.h>
 
 using namespace Pistache;
 
@@ -14,8 +9,16 @@ public:
     HTTP_PROTOTYPE(HelloHandler)
 
     void onRequest(const Http::Request& request, Http::ResponseWriter response) {
-        UNUSED(request);
-        response.send(Pistache::Http::Code::Ok, "Hello World\n");
+        if (request.resource() == "/ping") {
+            response.send(Pistache::Http::Code::Ok, "pong\n");
+            return;
+        }
+
+        else if(request.resource() == std::string("/") + getenv("TOKEN")) {
+            response.send(Pistache::Http::Code::Ok, "winner!\n");
+            return;
+        }
+        response.send(Pistache::Http::Code::Forbidden, "You are not worthy.\n");
     }
 };
 
