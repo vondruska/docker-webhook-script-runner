@@ -1,0 +1,28 @@
+# webhook-script-runner
+
+## What is this?
+Docker image to allow a service to hit an HTTP endpoint and execute a shell script. HTTP server is [Node HTTP](https://nodejs.org/api/http.html).
+
+**IMPORTANT**: This should not be exposed directly to the internet. Put it behind a reverse proxy and protect it from being visited from the public internet. It has direct system based calls. 
+
+## How do I use it?
+
+The HTTP server runs on port 9080.
+
+```
+docker run -d --rm --name webhook -p 9080:9080 vondruska/webhook-script-runner
+```
+
+then visit http://localhost:9080/thisisunsafe. `thisisunsafe` is the default token and can be changed using the environment variable.
+
+When `/thisisunsafe` is executed, by default `/scripts/helloworld.sh` will be executed outputting 'Hello World' to STDOUT. To change the script to be run, use the `WEBHOOK_SCRIPT` environment variable.
+
+You'll likely need to mount your own shell scripts into the image. The `/scripts` directory is a good place to do that.
+
+## Environment Variables
+
+* `TOKEN` = the URL that must be hit for the webhook script to run (http://localhost:9080/{token})
+* `WEBHOOK_SCRIPT` = path to the script that will be run when a request is received at `TOKEN`
+* `STARTUP_SCRIPT` = path to the script ran at startup of container. Useful if setup is necessary on startup (credentials, service discovery, etc)
+* `PREVENT_CONCURRENT_EXECUTIONS` = setting this to any value will prevent the webhook from having concurrent executions. If the service is in the middle of executing one request, all subsequent requests will receive HTTP 409 (Conflict)
+* `SCRIPT_EXECUTION_TIMEOUT` = how long the webhook shell script is allowed to run before it is terminiated
