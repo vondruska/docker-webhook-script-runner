@@ -14,10 +14,12 @@ module.exports.executeScript = (pathToScript, scriptTimeout, callback) => {
     process.on('exit', code => {
         console.log('Webhook script exit code: ', code);
 
+        clearTimeout(scriptTimer);
+
         callback(code);
     });
 
-    setTimeout(() => {
+    const scriptTimer = setTimeout(() => {
         process.kill();
         console.warn('script execution timeout');
     }, scriptTimeout);
