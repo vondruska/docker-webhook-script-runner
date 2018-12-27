@@ -1,6 +1,6 @@
 FROM node:alpine
 RUN apk add --no-cache git curl && \
-    addgroup -S webhook && adduser -S webhook -G webhook
+    addgroup -S webhook && adduser -u 111 -S webhook -G webhook
 ENV TOKEN=thisisunsafe WEBHOOK_SCRIPT=/scripts/helloworld.sh
 EXPOSE 9080
 WORKDIR /scripts
