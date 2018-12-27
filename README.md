@@ -24,5 +24,8 @@ You'll likely need to mount your own shell scripts into the image. The `/scripts
 * `TOKEN` = the URL that must be hit for the webhook script to run (http://localhost:9080/{token})
 * `WEBHOOK_SCRIPT` = path to the script that will be run when a request is received at `TOKEN`
 * `STARTUP_SCRIPT` = path to the script ran at startup of container. Useful if setup is necessary on startup (credentials, service discovery, etc)
-* `PREVENT_CONCURRENT_EXECUTIONS` = setting this to any value will prevent the webhook from having concurrent executions. If the service is in the middle of executing one request, all subsequent requests will receive HTTP 409 (Conflict)
 * `SCRIPT_EXECUTION_TIMEOUT` = how long the webhook shell script is allowed to run before it is terminiated
+
+## Nice to know
+
+* This image has `XDG_CONFIG_HOME` set to `/config` allowing Git to find the configurations easier without a home directory.
