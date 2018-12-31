@@ -23,6 +23,7 @@ docker-master:
     - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
   script:
     - docker build --pull -t "$REGISTRY_IMAGE" .
+    - docker tag "$REGISTRY_IMAGE" "$REGISTRY_IMAGE:$CI_JOB_ID"
     - docker push "$REGISTRY_IMAGE"
     - docker push "$REGISTRY_IMAGE:$CI_JOB_ID"
   only:
