@@ -1,0 +1,29 @@
+stages:
+  - validate
+  - docker
+
+shellcheck:
+  image: koalaman/shellcheck-alpine
+  stage: validate
+  script: shellcheck ./scripts/*.sh
+
+nodecheck:
+  image: node:alpine
+  stage: validate
+  script:
+    - for file in $(find ./src -type f); do node --check $file; done;
+
+
+docker-master:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
+  script:
+    - docker build --pull -t "$REGISTRY_IMAGE"
+    - docker push "$REGISTRY_IMAGE"
+    - docker push "$REGISTRY_IMAGE:$CI_JOB_ID"
+  only:
+    - master
