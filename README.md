@@ -1,5 +1,7 @@
 # webhook-script-runner
 
+[![pipeline status](https://gitlab.com/vondruska/docker-webhook-script-runner/badges/master/pipeline.svg)](https://gitlab.com/vondruska/docker-webhook-script-runner/commits/master)
+
 ## What is this?
 Docker image to allow a service to hit an HTTP endpoint and execute a shell script. HTTP server is [Node HTTP](https://nodejs.org/api/http.html).
 
