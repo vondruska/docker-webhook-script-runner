@@ -39,5 +39,6 @@ docker-branch:
   script:
     - docker manifest
     - docker build --pull -t "$REGISTRY_IMAGE" .
+    - docker build --pull -t "$REGISTRY_IMAGE" ./Dockerfile.arm
   except:
     - master
