@@ -33,7 +33,7 @@ docker-branch:
   stage: docker
   image: docker:latest
   variables:
-    - DOCKER_CLI_EXPERIMENTAL: "enabled"
+    DOCKER_CLI_EXPERIMENTAL: "enabled"
   services:
     - name: docker:dind
   script:
