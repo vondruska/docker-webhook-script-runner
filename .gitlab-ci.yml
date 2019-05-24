@@ -32,9 +32,10 @@ docker-master:
 docker-branch:
   stage: docker
   image: docker:latest
+  variables:
+    - DOCKER_CLI_EXPERIMENTAL: "enabled"
   services:
     - name: docker:dind
-      command: ["--experimental"]
   script:
     - docker manifest
     - docker build --pull -t "$REGISTRY_IMAGE" .
