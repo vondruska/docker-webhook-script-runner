@@ -33,8 +33,10 @@ docker-branch:
   stage: docker
   image: docker:latest
   services:
-    - docker:dind
+    - name: docker:dind
+      command: ["--experimental"]
   script:
+    - docker manifest
     - docker build --pull -t "$REGISTRY_IMAGE" .
   except:
     - master
