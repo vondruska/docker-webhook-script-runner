@@ -36,6 +36,8 @@ docker-branch:
     DOCKER_CLI_EXPERIMENTAL: "enabled"
   services:
     - name: docker:dind
+  before_script:
+    - docker run --rm --priviledged hypriot/qemu-register
   script:
     - docker manifest
     - docker build --pull -t "$REGISTRY_IMAGE" .
