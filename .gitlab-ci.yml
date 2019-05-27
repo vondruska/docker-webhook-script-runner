@@ -26,6 +26,7 @@ docker-amd64:
   services:
     - docker:dind
   before_script:
+    - docker logout
     - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
   script:
     - docker build --pull -t "$REGISTRY_IMAGE:$ARCH-$CI_PIPELINE_IID" -build-arg ARCH .
@@ -39,6 +40,7 @@ docker-arm32v7:
   services:
     - name: docker:dind
   before_script:
+    - docker logout
     - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
     - docker run --rm --privileged hypriot/qemu-register
   script:
