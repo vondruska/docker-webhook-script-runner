@@ -1,5 +1,6 @@
-FROM node:alpine
-RUN apk add --no-cache git curl
+ARG ARCH=library
+FROM $ARCH/node:slim
+RUN apt-get install -y git curl
 ENV TOKEN=thisisunsafe WEBHOOK_SCRIPT=/scripts/helloworld.sh XDG_CONFIG_HOME=/config
 
 # setup XDG_CONFIG_HOME directories and make it able to write from anyone.

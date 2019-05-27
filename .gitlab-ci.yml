@@ -1,6 +1,10 @@
 stages:
   - validate
   - docker
+  - manifest
+
+variables:
+  REGISTRY_IMAGE: "vondruska/webhook-script-runner"
 
 shellcheck:
   image: koalaman/shellcheck-alpine
@@ -14,33 +18,44 @@ nodecheck:
     - for file in $(find ./src -type f); do node --check $file; done;
 
 
-docker-master:
+docker-amd64:
   stage: docker
   image: docker:latest
+  variables:
+    ARCH: "amd64"
   services:
     - docker:dind
   before_script:
     - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
   script:
-    - docker build --pull -t "$REGISTRY_IMAGE" .
-    - docker tag "$REGISTRY_IMAGE" "$REGISTRY_IMAGE:$CI_JOB_ID"
+    - docker build --pull -t "$REGISTRY_IMAGE:$ARCH-$CI_PIPELINE_IID" -build-arg ARCH .
     - docker push "$REGISTRY_IMAGE"
-    - docker push "$REGISTRY_IMAGE:$CI_JOB_ID"
-  only:
-    - master
 
-docker-branch:
+docker-arm32v7:
   stage: docker
   image: docker:latest
   variables:
-    DOCKER_CLI_EXPERIMENTAL: "enabled"
+    ARCH: "arm32v7"
   services:
     - name: docker:dind
   before_script:
+    - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
     - docker run --rm --privileged hypriot/qemu-register
   script:
-    - docker manifest
-    - docker build --pull -t "$REGISTRY_IMAGE" .
-    - docker build --pull -t "$REGISTRY_IMAGE" -f Dockerfile.arm .
-  except:
+    - docker build --pull -t "$REGISTRY_IMAGE:$ARCH-$CI_PIPELINE_IID" -build-arg ARCH .
+    - docker push "$REGISTRY_IMAGE"
+
+docker-manifest:
+  stage: manifest
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_CLI_EXPERIMENTAL: "enabled"
+  before_script:
+    - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
+  script:
+    - docker manifest create "$REGISTRY_IMAGE:latest" "$REGISTRY_IMAGE:x64-$CI_PIPELINE_IID" "$REGISTRY_IMAGE:arm32v7-$CI_PIPELINE_IID"
+    - docker manifest push "$REGISTRY_IMAGE:latest"
+  only:
     - master
