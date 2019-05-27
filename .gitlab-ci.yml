@@ -55,7 +55,7 @@ docker-manifest:
   before_script:
     - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
   script:
-    - docker manifest create "$REGISTRY_IMAGE:latest" "$REGISTRY_IMAGE:x64-$CI_PIPELINE_IID" "$REGISTRY_IMAGE:arm32v7-$CI_PIPELINE_IID"
+    - docker manifest create "$REGISTRY_IMAGE:latest" "$REGISTRY_IMAGE:amd64-$CI_PIPELINE_IID" "$REGISTRY_IMAGE:arm32v7-$CI_PIPELINE_IID"
     - docker manifest push "$REGISTRY_IMAGE:latest"
   only:
     - master
