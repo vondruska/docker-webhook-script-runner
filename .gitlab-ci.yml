@@ -17,33 +17,28 @@ nodecheck:
   script:
     - for file in $(find ./src -type f); do node --check $file; done;
 
-
-docker-amd64:
+.docker:
   stage: docker
   image: docker:latest
-  variables:
-    ARCH: "amd64"
   services:
     - docker:dind
   before_script:
     - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
-  script:
-    - docker build --pull -t "$REGISTRY_IMAGE:$ARCH-$CI_PIPELINE_IID" --build-arg ARCH .
-    - docker push "$REGISTRY_IMAGE"
-
-docker-arm32v7:
-  stage: docker
-  image: docker:latest
-  variables:
-    ARCH: "arm32v7"
-  services:
-    - name: docker:dind
-  before_script:
-    - echo "$REGISTRY_PASSWORD" | docker login -u "$REGISTRY_USER" --password-stdin
     - docker run --rm --privileged hypriot/qemu-register
   script:
-    - docker build --pull -t "$REGISTRY_IMAGE:$ARCH-$CI_PIPELINE_IID" --build-arg ARCH .
+    - docker build --pull -t "$REGISTRY_IMAGE:$ARCH-$CI_PIPELINE_IID" -t "$REGISTRY_IMAGE:$ARCH" --build-arg ARCH .
     - docker push "$REGISTRY_IMAGE"
+
+
+docker-amd64:
+  extends: .docker
+  variables:
+    ARCH: "amd64"
+
+docker-arm32v7:
+  extends: .docker
+  variables:
+    ARCH: "arm32v7"
 
 docker-manifest:
   stage: manifest
